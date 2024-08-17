@@ -1,6 +1,6 @@
-![Springboot](https://shields.io/badge/v3.2.4-6DB33F?logo=springboot&label=Spring%20Boot&style=social)  
-![Springcloud](https://shields.io/badge/2023.0.1-6DB33F?logo=springboot&label=Spring%20Cloud&style=social)  
-![Gradle](https://img.shields.io/badge/v8.7-02303A?logo=gradle&label=Gradle&style=social)  
+![Springboot](https://shields.io/badge/v3.2.10-6DB33F?logo=springboot&label=Spring%20Boot&style=social)  
+![Springcloud](https://shields.io/badge/2023.0.3-6DB33F?logo=springboot&label=Spring%20Cloud&style=social)  
+![Gradle](https://img.shields.io/badge/v8.9-02303A?logo=gradle&label=Gradle&style=social)  
 ![Postgresql](https://img.shields.io/badge/v13-4169E1?logo=postgresql&label=PostgreSQL&style=social)  
 
 # 쿨타임 게이트웨이 프로젝트
