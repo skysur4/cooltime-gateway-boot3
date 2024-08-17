@@ -6,6 +6,7 @@
 # 쿨타임 게이트웨이 프로젝트
 
 ## 프로젝트 설정 가이드
+![Static Badge](https://img.shields.io/badge/warning-orange) Keycloak IdP를 기준 설정이며 ```issuer-uri``` URL 설정 필수
 
 #### IDE 설정
 ###### Spring Tool Suite (STS4)
