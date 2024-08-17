@@ -1,0 +1,240 @@
+###########################################################################
+### 기본 설정 
+###########################################################################
+
+###########################################################################
+### Application 설정 
+###########################################################################
+application:
+  # 인증 관련 context #
+  authentication:
+    authorization-url: '/${spring.application.root}/login/oauth2/authorization/{registrationId}'
+    authentication-url: '/${spring.application.root}/login/oauth2/code/{registrationId}'
+    login-url: /${spring.application.root}/login
+    logout-url: /${spring.application.root}/logout
+  
+  # 인증완료 redirect url #
+  frontend:
+    scheme: http
+    host: cooltime.io
+    context: 
+    port: 80
+  gateway: http://api.cooltime.io
+
+  # CORS 허용 도메인 #
+  cors: 
+    allowed-origin:
+    - http://cooltime.io
+    - https://cooltime.io
+
+###########################################################################
+### server 설정 
+###########################################################################
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+        same-site: lax
+  error:
+    whitelabel:
+      enabled: false
+
+###########################################################################
+### Spring 설정 
+###########################################################################
+spring:
+  application:
+    root: gateway
+    name: cooltime-gateway
+    realm: cooltime
+
+  profiles:
+    active: local
+
+  ### Cloud 설정 ###
+  webflux:
+    base-path: 
+  cloud:
+    gateway:
+      filter:
+        retry:
+          enabled: false
+
+  ### Redis 설정 ###
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+  ### Datasource 설정 ###
+  r2dbc:
+    url: r2dbc:postgresql://127.0.0.1:5432/cooltime
+    username: cooltime
+    password: ENC(xpgoun0Urk0dmen22yNCktet0Ha6mfIdb6ZENT0Km51PvW96YE32O7GDPiq4uDHF)
+    pool:
+      initial-size: 5
+      max-size: 5
+      max-create-connection-time: 60000
+      validation-depth: local
+      validation-query: select 1
+    properties:
+      schema: public
+
+  ### 웹 설정 ###
+  web:
+    resources:
+      add-mappings: true
+  sql:
+    init:
+      mode: never
+      continue-on-error: true
+  session:
+    redis:
+      flush-mode: immediate
+      save-mode: on-set-attribute
+
+  ### 보안 설정 ###
+  security:
+    ### OIDC 연동 설정 ###
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: https://auth.cooltime.io/realms/${spring.application.realm}
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: cooltime-client
+            client-secret: ENC(5w9SJ6imh+bj1KdFILzc9Nr99TOnlf1PtyQtpnSQWxTy4fJLnZuCDVAgQ18KiI4fpE3bxAUpmhNtCmYrZHC08GS78FA1ku4YUW7ga3mvqEw=)
+            redirect-uri: "${application.gateway}/${spring.application.root}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            scope: openid
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth.cooltime.io/realms/${spring.application.realm}
+
+    access:
+      free:
+      - /${spring.application.root}/**
+      - /favicon.ico
+      - /*/actuator/**
+      - /*/swagger/**
+      - /*/swagger-ui/**
+
+  ### 메시지 설정 ###
+  messages:
+    basename: messages/messages,
+              messages/error-messages,
+###########################################################################
+### Logging 설정 
+###########################################################################
+logging:
+  level:
+    root: info
+    lombok: info
+    org:
+      apache: info
+      kafka: info
+      postgresql: trace
+    com:
+      ulisesbocchio: debug
+      cloud: 
+        cloud: info
+    io:        
+      r2dbc: 
+        postgresql: 
+          QUERY: debug # for queries
+          PARAM: debug # for parameters    
+  file: 
+    name: app/logs/${spring.application.root}/${hostname}/${spring.application.name}.log
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %clr(${LOG_LEVEL_PATTERN:-%5p}) %-10logger{0} %msg%n"
+    file: "%d{HH:mm:ss.SSS} %-5level %-10logger{0} %msg%n"
+  logback:
+    rollingpolicy: 
+      file-name-pattern: app/logs/${spring.application.root}/${hostname}/${spring.application.name}.%d{yyyy-MM-dd}.%i.gz
+      max-file-size: 100MB
+      max-history: 15
+      
+###########################################################################
+### Actuator 설정 
+###########################################################################
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoint:
+    info:
+      enabled: true
+    env:
+      enabled: true
+    health:
+      enabled: true
+      probes:
+        enabled: true
+  health:
+    diskspace:
+      enabled: false
+    db:
+      enabled: false
+    redis:
+      enabled: false
+  endpoints:
+    enabled-by-default: false
+    web:
+      base-path: /${spring.application.root}/actuator
+      exposure:
+        include: '*'
+
+###########################################################################
+### Swagger 설정 
+###########################################################################
+springdoc:
+  swagger-ui:
+    use-root-path: true
+    path: /${spring.application.root}/swagger.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /${spring.application.root}/swagger/docs
+    groups:
+      enabled: true
+  cache:
+    disabled: true
+  api-info:
+    title: Gateway API
+    description: Apis for Gateway
+    version: 1.0.0
+    terms-of-service: http://cooltime.io/termsofservice
+    contact:
+      name: Administrator
+      url: https://cooltime.io
+      email: admin@cooltime.io
+    license:
+      name: MIT License
+      url: https://cooltime.io/license
+
+###########################################################################
+### Router data 설정 
+###########################################################################
+routers:
+  defaults:
+    description:
+      context: description # 라우팅 소스 컨텍스트
+      scheme: http # 라우팅 대상 스키마
+      host: localhost # 라우팅 대상 주소 (ip/domain)
+      port: 8080 # 라우팅 대상 포트
+      prefix: test # 라우팅 대상 path의 맨 앞에 추가되는 path
+      rewrite: explain/v1 # 라우팅 대상 컨텍스트
+      remove-context: false # 컨텍스트 제거, true일 경우 prefix와 rewrite 무시
+      skip-filters: true # 라우팅 필터 적용 유무, true일 경우 모든 GatewayFilter를 우회
+
+###########################################################################
+### Jasypt 설정 
+###########################################################################
+jasypt:
+  encryptor:
+    password: ${ENCRYPTOR_PROFILE}

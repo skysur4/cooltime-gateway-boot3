@@ -1,0 +1,140 @@
+plugins {
+	id 'org.springframework.boot'
+}
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+ext {
+	set('springCloudVersion', "2023.0.1")
+
+    /*
+     * 브랜치명이 없거나 main이 아니라면 dev 프로필로 진행
+    */
+    BRANCH_NAME = !project.hasProperty("branchName") ? "development" : branchName
+    BUILD_NUMBER = !project.hasProperty("buildNumber") ? "999" : buildNumber
+    PROFILE = BRANCH_NAME.contains("refs/tags/") ? "prod" : "dev"
+
+    TIME_ZONE = TimeZone.getTimeZone("Asia/Seoul")                     // 한국 시간대
+    BUILD_TIME = new Date().format("yyyy-MM-dd HH:mm:ss", TIME_ZONE)   // 빌드 시간
+    MAJOR = PROFILE.equalsIgnoreCase("prod") ? "3" : "0"
+    MINOR = "0"
+    PATCH = BUILD_NUMBER
+
+    BUILD_VERSION = "${MAJOR}.${MINOR}.${PATCH}"
+}
+
+println "[ INFO ]  BRANCH_NAME	: ${BRANCH_NAME}"
+println "[ INFO ]  BUILD_VERSION: ${BUILD_VERSION}"
+println "[ INFO ]  PROFILE		: ${PROFILE}"
+
+group = 'io.cooltime'
+version = BUILD_VERSION
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+		//maven {	//k8s nexus 내부 도메인
+		//	allowInsecureProtocol true
+		//	url 'http://nexus-service.nexus-repository.svc.cluster.local/repository/maven-repository/'
+		//}
+		maven {	//k8s nexus 외부 도메인
+			allowInsecureProtocol true
+			url 'https://nexus.cooltime.io/repository/maven-repository/'
+		}
+        mavenCentral()
+        maven {
+        	url layout.projectDirectory.dir('../repo')
+        }
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+dependencies {
+	/***********************************************
+	***************** SpringBoot *******************
+	***********************************************/
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+
+	//spring cloud
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+
+	//web
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//oauth2
+    implementation 'org.springframework.security:spring-security-oauth2-core'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+	//monitoring
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	//tracing 추가 설정 필요함
+	//implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+
+	//database
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly 'org.postgresql:r2dbc-postgresql'
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.session:spring-session-data-redis'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	/***********************************************
+	******************** others ********************
+	***********************************************/
+
+	//property encryption
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+
+	//logback
+	implementation 'org.codehaus.janino:janino:3.1.7'
+
+	//swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
+
+	//guava
+	implementation 'com.google.guava:guava:33.1.0-jre'
+
+	// JSON
+	implementation 'org.json:json:20240303'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0'	//class java.time.Instant 오류 방지
+
+
+	//apache
+	implementation 'org.apache.commons:commons-lang3:3.14.0'
+	implementation 'org.apache.commons:commons-collections4:4.4'
+
+	//test
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+jar {
+	enabled = false
+}
+
+test {
+	ignoreFailures = true
+	useJUnitPlatform()
+}
+

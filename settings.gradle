@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+		//maven {	//k8s nexus 외부 도메인
+		//	allowInsecureProtocol true
+		//	url 'https://nexus.cooltime.io/repository/maven-repository/'
+		//}
+        mavenCentral()
+    }
+	plugins {
+		id "org.springframework.boot" version "3.2.10"
+	}
+}
+rootProject.name = 'cooltime-gateway'

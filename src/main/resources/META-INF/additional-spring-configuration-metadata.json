@@ -1,0 +1,50 @@
+{"properties": [
+  {
+    "name": "spring.application.root",
+    "type": "java.lang.String",
+    "description": "게이트웨이 컨텍스트"
+  },
+  {
+    "name": "routers",
+    "description": "라우터 설정"
+  },
+  {
+    "name": "routers.defaults",
+    "type": "Map<java.lang.String, io.cooltime.gateway.properties.RouterProperties>",
+    "description": "기본 라우터 정보"
+  },
+  {
+    "name": "application",
+    "type": "io.cooltime.gateway.properties.ApplicationProperties",
+    "description": "앱 정보"
+  },
+  {
+    "name": "application.authentication",
+    "type": "io.cooltime.gateway.properties.AuthenticationProperties",
+    "description": "인증 경로"
+  },
+  {
+    "name": "application.cors",
+    "type": "io.cooltime.gateway.properties.CorsProperties",
+    "description": "CORS 호스트"
+  },
+  {
+    "name": "springdoc.api-info",
+    "type": "io.cooltime.gateway.properties.SwaggerProperties",
+    "description": "스웨거 문서 정보"
+  },
+  {
+    "name": "spring.security.access",
+    "description": "시큐리티 접속 설정"
+  },
+  {
+    "name": "spring.security.access.excludes",
+    "type": "java.util.List<java.lang.String>",
+    "description": "프리패스 경로 패턴"
+  },
+  {
+    "name": "spring.application.realm",
+    "type": "java.lang.String",
+    "description": "키클락 릴름 이름"
+  }
+]}

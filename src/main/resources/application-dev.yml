@@ -1,0 +1,80 @@
+###########################################################################
+### Application 설정 
+###########################################################################
+application:
+  # 인증완료 redirect url #
+  frontend:
+    scheme: http
+    host: dev.cooltime.io
+    context: 
+    port: 80
+  gateway: https://gatewaydev.cooltime.io
+  
+  # CORS 허용 도메인 #
+  cors: 
+    allowed-origin:
+    - http://dev.cooltime.io
+    - https://dev.cooltime.io
+
+###########################################################################
+### Spring 설정 
+###########################################################################
+spring:
+  application:
+    realm: cooltimedev
+
+  ### datasource 설정 ###
+  r2dbc:
+    url: r2dbc:postgresql://127.0.0.1:5432/cooltime
+    username: cooltime
+    password: ENC(NkemShz33zHmwdBmNmKSzBFCHj+tsFT+N0jPxuCP5TX6avHSnjW/lNxpA84G0iNX)
+    properties:
+      schema: public
+
+  ### redis sentinel 설정 ###
+  data:
+    redis:
+      host: 192.168.0.170
+      port: 6379
+      username: cooltime
+      password: ENC(1tKjvHYGW4LuwUEixf+9MBMCv4i6D7HPTwXQJPVhaVg7pgkkxHNrO2PA+T7Xqsv/)
+      sentinel:
+        master: cooltime
+        nodes:
+        - 192.168.0.170:26379
+        - 192.168.0.180:26379
+        - 192.168.0.190:26379
+
+  ### 보안 설정 ###
+  security:
+    ### OIDC 연동 설정 ###
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: cooltime-client
+            client-secret: ENC(4/lRxU17uXX93V4m/Fy/okP5FsES5KMaHGNomCAdJUatUxobIrcZRzBKoPmofXe5ToZ3G4OrAOOx11RT5/Tt80J+ZE/i7ZOIhO6LHt46v6U=)
+
+    ### 비로그인 백엔드 설정 ###
+    access:
+      nologin:
+      - /template/**
+      - /translate/**
+
+###########################################################################
+### Router data 설정 
+###########################################################################
+routers:
+  defaults:
+    translate:
+      context: translate
+      scheme: http
+      host: transapi-service.cooltimedev.svc
+      port: 80
+
+###########################################################################
+### Logging 설정 
+###########################################################################
+logging:
+  level:
+    root: info

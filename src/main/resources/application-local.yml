@@ -1,0 +1,86 @@
+###########################################################################
+# 로컬 설정
+###########################################################################
+
+###########################################################################
+### server 설정 
+###########################################################################
+server:
+  port: 9090
+
+###########################################################################
+### Application 설정 
+###########################################################################
+application:
+  # 인증완료 redirect url #
+  frontend:
+    scheme: http
+    host: localhost
+    context: 
+    port: 3000
+  gateway: http://localhost:9090
+
+  # CORS 허용 도메인 #
+  cors: 
+    allowed-origin:
+    - http://localhost:3000
+
+###########################################################################
+### Spring 설정 
+###########################################################################
+spring:
+  application:
+    realm: cooltimedev
+
+  ### Redis 설정 ###
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+  ### Datasource 설정 ###
+  r2dbc:
+    url: r2dbc:postgresql://127.0.0.1:5432/cooltime
+    username: cooltime
+    password: ENC(NkemShz33zHmwdBmNmKSzBFCHj+tsFT+N0jPxuCP5TX6avHSnjW/lNxpA84G0iNX)
+    properties:
+      schema: public
+
+  ### 보안 설정 ###
+  security:
+    ### OIDC 연동 설정 ###
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: cooltime-client
+            client-secret: ENC(4/lRxU17uXX93V4m/Fy/okP5FsES5KMaHGNomCAdJUatUxobIrcZRzBKoPmofXe5ToZ3G4OrAOOx11RT5/Tt80J+ZE/i7ZOIhO6LHt46v6U=)
+
+    ### 비로그인 백엔드 설정 ###
+    access:
+      nologin:
+      - /template/**
+      - /translate/**
+
+###########################################################################
+### Router data 설정 
+###########################################################################
+routers:
+  defaults:
+    translate:
+      context: translate
+      scheme: http
+      host: localhost
+      port: 8080
+    template:
+      context: template
+      scheme: http
+      host: localhost
+      port: 8080
+
+###########################################################################
+### Logging 설정 
+###########################################################################
+logging:
+  level:
+    root: info
