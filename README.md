@@ -72,26 +72,20 @@ spring:
     ### OIDC 연동 설정 ###
     oauth2:
       client:
-        provider: #oidc 스펙 지원 시 사용
-          kakao:
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
-            token-uri: https://kauth.kakao.com/oauth/token
-            issuer-uri: https://kauth.kakao.com
-            jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
-            user-info-uri: https://kapi.kakao.com/v1/oidc/userinfo
-            user-name-attribute: name
+        provider:
+          keycloak:
+            issuer-uri: https://auth.cooltime.io/realms/${spring.application.realm}
         registration:
-          kakao:
-            client-name: "Kakao Oauth2 Client"
-            client-id: asdf234 #ENC(Yg6dVjID6lwGAHaAd57fNX30Oe8BWTXulirZ/Or629P63QZ7vH4v0nhPI7iHfIrU)
-            client-secret: asdf234 #ENC(XZhlr3OttWpb+hXyj8xGoZTY2AICrW/6aUtt2Le438TJehaGgOmEHSM20HR0wDoO)
+          keycloak:
+            provider: keycloak
+            client-id: cooltime-client
+            client-secret: ENC(5w9SJ6imh+bj1KdFILzc9Nr99TOnlf1PtyQtpnSQWxTy4fJLnZuCDVAgQ18KiI4fpE3bxAUpmhNtCmYrZHC08GS78FA1ku4YUW7ga3mvqEw=)
+            redirect-uri: "${application.gateway}/${spring.application.root}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/${spring.application.root}/login/oauth2/code/{registrationId}"
-            scope: "oidc"
+            scope: openid
       resourceserver:
         jwt:
-          jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
-          issuer-uri: https://kauth.kakao.com
+          issuer-uri: https://auth.cooltime.io/realms/${spring.application.realm}
 ```
 
 ###### 2. 라우팅
